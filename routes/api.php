@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CommentController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
@@ -17,3 +18,5 @@ Route::middleware('auth:sanctum')->patch('/likes/{posts}', [PostController::clas
 Route::middleware('auth:sanctum')->post('/posts', [PostController::class, 'createPost']);
 Route::middleware('auth:sanctum')->patch('/posts/{post}', [PostController::class, 'updatePost']);
 Route::middleware('auth:sanctum')->delete('/posts/{post}', [PostController::class, 'deletePost']);
+Route::middleware('auth:sanctum')->post('/posts/{postId}/comments', [CommentController::class, 'createComment']);
+Route::middleware('auth:sanctum')->patch('/comments/{commentId}', [CommentController::class, 'updateComment']);
