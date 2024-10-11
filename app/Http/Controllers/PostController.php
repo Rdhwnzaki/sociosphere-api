@@ -10,7 +10,7 @@ class PostController extends Controller
 {
     public function getAllPosts()
     {
-        $posts = Post::with('user')->get();
+        $posts = Post::with(['comments.user'])->with('user')->get();
 
         return response()->json([
             'message' => "All posts retrieved successfully",
@@ -22,7 +22,7 @@ class PostController extends Controller
     {
         $user = Auth::User();
 
-        $posts = Post::where('user_id', $user->id)->with('user')->get();
+        $posts = Post::with(['comments.user'])->where('user_id', $user->id)->with('user')->get();
 
         return response()->json([
             'message' => "Posts retreived successfully",
