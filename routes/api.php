@@ -18,5 +18,6 @@ Route::middleware('auth:sanctum')->patch('/likes/{posts}', [PostController::clas
 Route::middleware('auth:sanctum')->post('/posts', [PostController::class, 'createPost']);
 Route::middleware('auth:sanctum')->patch('/posts/{post}', [PostController::class, 'updatePost']);
 Route::middleware('auth:sanctum')->delete('/posts/{post}', [PostController::class, 'deletePost']);
-Route::middleware('auth:sanctum')->post('/posts/{postId}/comments', [CommentController::class, 'createComment']);
+Route::middleware('auth:sanctum')->post('/comments', [CommentController::class, 'createComment']);
 Route::middleware('auth:sanctum')->patch('/comments/{commentId}', [CommentController::class, 'updateComment']);
+Route::middleware('auth:sanctum')->post('/comments/{commentId}/reply', [CommentController::class, 'replyToComment']);

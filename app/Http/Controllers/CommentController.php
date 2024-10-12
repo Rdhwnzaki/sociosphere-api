@@ -9,32 +9,29 @@ use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
-    public function createComment(Request $request, $postId)
+    public function createComment(Request $request)
     {
         $request->validate([
+            'post_id' => 'required|exists:posts,id',
             'description' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'parent_id' => 'nullable|exists:comments,id',
         ]);
 
-        $post = Post::findOrFail($postId);
-
-        $commentData = [
-            'post_id' => $post->id,
-            'user_id' => Auth::id(),
-            'description' => $request->description
-        ];
+        $comment = new Comment();
+        $comment->user_id = $request->user()->id;
+        $comment->post_id = $request->post_id;
+        $comment->description = $request->description;
+        $comment->parent_id = $request->parent_id;
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('images/comments', 'public');
-            $commentData['image'] = $path;
+            $path = $request->file('image')->store('images', 'public');
+            $comment->image = $path;
         }
 
-        $comment = Comment::create($commentData);
+        $comment->save();
 
-        return response()->json([
-            'message' => 'Comment created successfully',
-            'comment' => $comment
-        ], 201);
+        return response()->json(['message' => 'Comment created successfully', 'comment' => $comment], 201);
     }
 
     public function updateComment(Request $request, $commentId)
@@ -67,5 +64,30 @@ class CommentController extends Controller
             'message' => 'Comment updated successfully',
             'comment' => $comment
         ]);
+    }
+
+    public function replyToComment(Request $request, $commentId)
+    {
+        $parentComment = Comment::findOrFail($commentId);
+
+        $request->validate([
+            'description' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $reply = new Comment();
+        $reply->user_id = $request->user()->id;
+        $reply->post_id = $parentComment->post_id;
+        $reply->description = $request->description;
+        $reply->parent_id = $parentComment->id;
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('images', 'public');
+            $reply->image = $path;
+        }
+
+        $reply->save();
+
+        return response()->json(['message' => 'Reply added successfully', 'reply' => $reply], 201);
     }
 }

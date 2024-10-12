@@ -10,25 +10,40 @@ class PostController extends Controller
 {
     public function getAllPosts()
     {
-        $posts = Post::with(['comments.user'])->with('user')->get();
+        $posts = Post::with([
+            'user',
+            'comments' => function ($query) {
+                $query->whereNull('parent_id')
+                    ->with(['replies.user']);
+            },
+            'comments.user'
+        ])->get();
 
         return response()->json([
-            'message' => "All posts retrieved successfully",
-            'posts' => $posts
-        ], 200);
-    }
-
-    public function getPostsByLoggedInUser()
-    {
-        $user = Auth::User();
-
-        $posts = Post::with(['comments.user'])->where('user_id', $user->id)->with('user')->get();
-
-        return response()->json([
-            'message' => "Posts retreived successfully",
+            'message' => 'All posts retrieved successfully',
             'posts' => $posts
         ]);
     }
+
+    public function getPostsByLoggedInUser(Request $request)
+    {
+        $userId = $request->user()->id;
+
+        $posts = Post::with([
+            'user',
+            'comments' => function ($query) {
+                $query->whereNull('parent_id')
+                    ->with(['replies.user']);
+            },
+            'comments.user'
+        ])->where('user_id', $userId)->get();
+
+        return response()->json([
+            'message' => 'Posts retrieved successfully',
+            'posts' => $posts,
+        ]);
+    }
+
 
     public function likePost($postId)
     {
