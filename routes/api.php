@@ -8,7 +8,9 @@ use App\Http\Controllers\CommentController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
-Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::middleware(['cors'])->group(function () {
+    Route::post('/login', [AuthController::class, 'login']);
+});
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 Route::middleware('auth:sanctum')->patch('/profile', [UserController::class, 'updateProfile']);
 Route::middleware('auth:sanctum')->get('/profile', [UserController::class, 'getProfile']);
