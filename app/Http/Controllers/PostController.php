@@ -17,7 +17,9 @@ class PostController extends Controller
                     ->with(['replies.user']);
             },
             'comments.user'
-        ])->get();
+        ])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return response()->json([
             'message' => 'All posts retrieved successfully',
@@ -36,7 +38,10 @@ class PostController extends Controller
                     ->with(['replies.user']);
             },
             'comments.user'
-        ])->where('user_id', $userId)->get();
+        ])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->where('user_id', $userId)->get();
 
         return response()->json([
             'message' => 'Posts retrieved successfully',
